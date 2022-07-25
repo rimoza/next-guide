@@ -1,9 +1,8 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React from 'react'
-import { Character } from '../../types';
+import { Character, GetCharackterResults } from '../../types';
 import imageLoader from '../../imageLoader';
-import { GetServerSideProps, GetStaticPaths } from 'next';
 
 const CharacterPage = ({ character }: { character: Character }) => {
     const router = useRouter();
@@ -24,26 +23,27 @@ const CharacterPage = ({ character }: { character: Character }) => {
     )
 }
 
-// export async function getStaticPaths() {
-//     const res = await fetch('https://rickandmortyapi.com/api/character');
-//     const { results }: GetCharackterResults = await res.json();
+export async function getStaticPaths() {
+    const res = await fetch('https://rickandmortyapi.com/api/character');
+    const { results }: GetCharackterResults = await res.json();
 
-//     return {
-//         paths: results.map((character) => {
-//             return {
-//                 params: { id: String(character.id) },
+    return {
+        paths: results.map((character) => {
+            return {
+                params: { id: String(character.id) },
 
-//             }
+            }
 
-//         }),
-//         fallback: false,
-//     }
+        }),
+        fallback: false,
+    }
 
-// }
+}
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    const res = await fetch(`https://rickandmortyapi.com/api/character/${context.query.id}`)
-    const character = await res.json();
+export async function getStaticProps({ params }: { params: { id: string } }) {
+    const res = await fetch(`https://rickandmortyapi.com/api/character/${params.id}`)
+    const character: GetCharackterResults = await res.json();
+
 
     return {
         props: {
